@@ -22,19 +22,42 @@ function App() {
   });
   const [repos, setRepos] = useState({ repos: [] });
   const [searched, setS] = useState(false);
+  const [next, setNext] = useState(false);
 
-  useEffect(() => {}, [repos]);
+  function prevRepo() {
+    let name = document.getElementById("name").value;
+
+    axios
+
+      .get(`https://api.github.com/users/${name}/repos?page=1`)
+      .then((response) => {
+        setNext(true);
+        setRepos({ repos: response.data });
+      });
+  }
+
+  function nextRepo() {
+    let name = document.getElementById("name").value;
+
+    axios
+
+      .get(`https://api.github.com/users/${name}/repos?page=2`)
+      .then((response) => {
+        setNext(true);
+        setRepos({ repos: response.data });
+      });
+  }
 
   function search() {
     let name = document.getElementById("name").value;
     if (name == "") {
       return;
     }
-    setS(true);
 
     axios
       .get(`https://api.github.com/users/${name}`)
       .then((response) => {
+        setS(true);
         setUser({
           name: response.data.name,
           imgUrl: response.data.avatar_url,
@@ -49,6 +72,7 @@ function App() {
       })
       .catch((e) => {
         console.log(e);
+        setS(false);
       });
 
     axios
@@ -110,7 +134,7 @@ function App() {
                 )}
               </div>
             </div>
-            <div className="w-[70%]   p-4  ">
+            <div className="w-[70%]    p-4  ">
               <p className="text-white font-semibold mb-2 text-xl ">
                 Public repos {user.repc}
               </p>
@@ -126,6 +150,21 @@ function App() {
                     />
                   );
                 })}
+              </div>
+
+              <div className="flex justify-evenly mt-3 ">
+                <button
+                  onClick={prevRepo}
+                  className="text-blue-600 text-sm p-2 rounded-md hover:border hover:border-gray-600"
+                >
+                  &lt; Previous
+                </button>
+                <button
+                  onClick={nextRepo}
+                  className="text-blue-600 text-sm p-2 rounded-md hover:border hover:border-gray-600"
+                >
+                  Next &gt;
+                </button>
               </div>
             </div>
           </div>
