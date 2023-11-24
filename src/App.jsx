@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoLocationOutline } from "react-icons/io5";
 import "./App.css";
 import { IoIosSearch } from "react-icons/io";
 import axios from "axios";
+import RepoCard from "./components/RepoCard";
 
 //https://api.github.com/users/Muhammedjazimtk/repos  api url for getting public repos of user
 //https://api.github.com/users/Muhammedjazimtk api for getting user information
@@ -19,35 +20,41 @@ function App() {
     url: "",
     repc: "",
   });
+  const [repos, setRepos] = useState({ repos: [] });
   const [searched, setS] = useState(false);
 
+  useEffect(() => {}, [repos]);
+
   function search() {
-    setS(true);
     let name = document.getElementById("name").value;
-    // const response = octokit.request("GET /repos/{owner}/{repo}", {
-    //   owner: "github",
-    //   repo: "docs",
-    //   issue_number: 11901,
-    //   headers: {
-    //     "x-github-api-version": "2022-11-28",
-    //   },
-    // });
-    // console.log(response);
+    if (name == "") {
+      return;
+    }
+    setS(true);
+
     axios
       .get(`https://api.github.com/users/${name}`)
       .then((response) => {
-        console.log(response.data.name);
         setUser({
           name: response.data.name,
           imgUrl: response.data.avatar_url,
           login: response.data.login,
           bio: response.data.bio,
           followers: response.data.followers,
-          following: response.data.followers,
+          following: response.data.following,
           location: response.data.location,
           url: response.data.html_url,
           repc: response.data.public_repos,
         });
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+
+    axios
+      .get(`https://api.github.com/users/${name}/repos`)
+      .then((response) => {
+        setRepos({ repos: response.data });
       })
       .catch((e) => {
         console.log(e);
@@ -73,7 +80,7 @@ function App() {
           />
         </div>
         {searched ? (
-          <div className="flex gap-2 bg-[#0d1117] h-screen px-32 py-12 items-center justify-center">
+          <div className="flex gap-2 bg-[#0d1117]  px-32 py-12 items-start justify-center">
             <div className="w-[30%]  gap-4  h-full rounded-md flex flex-col items-center p-4 ">
               <img className="rounded-full h-[50%]" src={user.imgUrl} />
               <div className="w-full h-full flex flex-col">
@@ -103,10 +110,23 @@ function App() {
                 )}
               </div>
             </div>
-            <div className="w-[70%] border border-gray-700 h-full rounded-md p-4  ">
-              <p className="text-white font-semibold ">
+            <div className="w-[70%]   p-4  ">
+              <p className="text-white font-semibold mb-2 text-xl ">
                 Public repos {user.repc}
               </p>
+              <div className="grid grid-cols-2 gap-2 h-full">
+                {repos.repos.map((ele, idx) => {
+                  return (
+                    <RepoCard
+                      key={idx}
+                      name={ele.name}
+                      language={ele.language}
+                      update={ele.pushed_at}
+                      url={ele.html_url}
+                    />
+                  );
+                })}
+              </div>
             </div>
           </div>
         ) : (
