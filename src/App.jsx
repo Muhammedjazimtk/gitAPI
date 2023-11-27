@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { IoLocationOutline } from "react-icons/io5";
 import "./App.css";
 import { IoIosSearch } from "react-icons/io";
@@ -22,16 +22,30 @@ function App() {
   });
   const [repos, setRepos] = useState({ repos: [] });
   const [searched, setS] = useState(false);
-  const [next, setNext] = useState(false);
+  const [page, setPage] = useState(1);
 
   function prevRepo() {
     let name = document.getElementById("name").value;
+    setPage(page - 1);
+
+    // document.getElementById("prev").disabled = true;
+    // document.getElementById("prev").style.color =
+    //   "rgb(75 85 99 / var(--tw-text-opacity))";
 
     axios
 
-      .get(`https://api.github.com/users/${name}/repos?page=1`)
+      .get(`https://api.github.com/users/${name}/repos?page=${page - 1}`)
       .then((response) => {
-        setNext(true);
+        console.log(page);
+        document.getElementById("next").style.color =
+          "rgb(37 99 235 / var(--tw-text-opacity))";
+        document.getElementById("next").disabled = false;
+
+        if (page - 2 == 0) {
+          document.getElementById("prev").disabled = true;
+          document.getElementById("prev").style.color =
+            "rgb(75 85 99 / var(--tw-text-opacity))";
+        }
         setRepos({ repos: response.data });
       });
   }
@@ -40,15 +54,41 @@ function App() {
     let name = document.getElementById("name").value;
 
     axios
-
-      .get(`https://api.github.com/users/${name}/repos?page=2`)
+      .get(`https://api.github.com/users/${name}/repos?page=${page + 1}`)
       .then((response) => {
-        setNext(true);
+        setPage(page + 1);
+        console.log(page);
+        // if (response.data.length == 0) {
+        //   document.getElementById("next").disabled = true;
+        //   document.getElementById("next").style.color =
+        //     "rgb(75 85 99 / var(--tw-text-opacity))";
+
+        //   return;
+        // }
+
+        document.getElementById("prev").style.color =
+          "rgb(37 99 235 / var(--tw-text-opacity))";
+        document.getElementById("prev").disabled = false;
+
         setRepos({ repos: response.data });
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+
+    axios
+      .get(`https://api.github.com/users/${name}/repos?page=${page + 2}`)
+      .then((response) => {
+        if (response.data.length == 0) {
+          document.getElementById("next").disabled = true;
+          document.getElementById("next").style.color =
+            "rgb(75 85 99 / var(--tw-text-opacity))";
+        }
       });
   }
 
   function search() {
+    setPage(1);
     let name = document.getElementById("name").value;
     if (name == "") {
       return;
@@ -78,6 +118,18 @@ function App() {
     axios
       .get(`https://api.github.com/users/${name}/repos`)
       .then((response) => {
+        document.getElementById("prev").disabled = true;
+        document.getElementById("prev").style.color =
+          "rgb(75 85 99 / var(--tw-text-opacity))";
+        if (response.data.length != 30) {
+          document.getElementById("next").disabled = true;
+          document.getElementById("next").style.color =
+            "rgb(75 85 99 / var(--tw-text-opacity))";
+        } else {
+          document.getElementById("next").style.color =
+            "rgb(37 99 235 / var(--tw-text-opacity))";
+          document.getElementById("next").disabled = false;
+        }
         setRepos({ repos: response.data });
       })
       .catch((e) => {
@@ -154,14 +206,16 @@ function App() {
 
               <div className="flex justify-evenly mt-3 ">
                 <button
+                  id="prev"
                   onClick={prevRepo}
-                  className="text-blue-600 text-sm p-2 rounded-md hover:border hover:border-gray-600"
+                  className="text-gray-600 text-sm p-2 rounded-md "
                 >
                   &lt; Previous
                 </button>
                 <button
+                  id="next"
                   onClick={nextRepo}
-                  className="text-blue-600 text-sm p-2 rounded-md hover:border hover:border-gray-600"
+                  className="text-blue-600 text-sm p-2 rounded-md"
                 >
                   Next &gt;
                 </button>

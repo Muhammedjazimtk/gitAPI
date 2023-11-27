@@ -1,5 +1,3 @@
-import PropTypes from "prop-types";
-
 //86400000 ms in a day
 
 // eslint-disable-next-line react/prop-types
@@ -33,7 +31,7 @@ const RepoCard = ({ name, language, update, url }) => {
         <a href={url} target="_blank" rel="noreferrer">
           <p className="font-bold text-blue-600">{name}</p>
         </a>
-        <p className="border font-bold text-gray-400 border-gray-600 rounded-2xl px-2 py-1 text-[10px]">
+        <p className="border font-bold text-gray-400 border-gray-600 h-[23px] rounded-2xl px-2 py-1 text-[10px]">
           Public
         </p>
       </div>
@@ -43,12 +41,6 @@ const RepoCard = ({ name, language, update, url }) => {
       </div>
     </div>
   );
-};
-
-RepoCard.PropTypes = {
-  name: PropTypes.any,
-  language: PropTypes.any,
-  update: PropTypes.any,
 };
 
 export default RepoCard;
