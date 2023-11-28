@@ -23,6 +23,7 @@ function App() {
   const [repos, setRepos] = useState({ repos: [] });
   const [searched, setS] = useState(false);
   const [page, setPage] = useState(1);
+  const [err, setErr] = useState("");
 
   function prevRepo() {
     let name = document.getElementById("name").value;
@@ -91,12 +92,14 @@ function App() {
     setPage(1);
     let name = document.getElementById("name").value;
     if (name == "") {
+      setErr("Enter a valid user name");
       return;
     }
 
     axios
       .get(`https://api.github.com/users/${name}`)
       .then((response) => {
+        setErr("");
         setS(true);
         setUser({
           name: response.data.name,
@@ -111,6 +114,7 @@ function App() {
         });
       })
       .catch((e) => {
+        setErr("Enter a valid user name");
         console.log(e);
         setS(false);
       });
@@ -140,24 +144,27 @@ function App() {
   return (
     <div className="container">
       <div className="flex flex-col ">
-        <div className="flex items-center justify-center gap-2 h-[120px] bg-black">
-          <input
-            id="name"
-            className="p-1 pl-3 rounded-md bg-[#0d1117] w-[25%] text-white border border-white"
-            type="text"
-            name="name"
-            placeholder="Enter a user name..."
-            autoComplete="off"
-          />
+        <div className="flex flex-col items-center justify-center gap-2 h-[120px] bg-black">
+          <div className="flex gap-2 items-center w-[25%] justify-center bg-black">
+            <input
+              id="name"
+              className="p-1 pl-3 rounded-md bg-[#0d1117] w-[25%] lg:w-full text-white border border-white"
+              type="text"
+              name="name"
+              placeholder="Enter a user name..."
+              autoComplete="off"
+            />
 
-          <IoIosSearch
-            className="text-white text-3xl cursor-pointer  rounded-md hover:text-black hover:bg-white"
-            onClick={() => search()}
-          />
+            <IoIosSearch
+              className="text-white text-3xl cursor-pointer  rounded-md hover:text-black hover:bg-white"
+              onClick={() => search()}
+            />
+          </div>
+          <p className="text-white text-xs bg-black">{err}</p>
         </div>
         {searched ? (
-          <div className="flex gap-2 bg-[#0d1117]  px-32 py-12 items-start justify-center">
-            <div className="w-[30%]  gap-4  h-full rounded-md flex flex-col items-center p-4 ">
+          <div className="flex flex-col lg:flex-row gap-2 bg-[#0d1117]   px-32 py-12 items-start justify-center">
+            <div className="lg:w-[30%] w-[100%] gap-4  h-full flex flex-col items-center p-4  ">
               <img className="rounded-full h-[50%]" src={user.imgUrl} />
               <div className="w-full h-full flex flex-col">
                 <p
@@ -186,7 +193,7 @@ function App() {
                 )}
               </div>
             </div>
-            <div className="w-[70%]    p-4  ">
+            <div className="lg:w-[70%] w-full     p-4  ">
               <p className="text-white font-semibold mb-2 text-xl ">
                 Public repos {user.repc}
               </p>

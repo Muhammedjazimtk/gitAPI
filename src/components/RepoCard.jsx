@@ -38,18 +38,6 @@ const RepoCard = ({ name, language, update, url }) => {
     }
   }
 
-  // if (diffDays > 32) {
-  //   timeString =
-  //     "updated on " +
-  //     month +
-  //     " , " +
-  //     date1.getDay() +
-  //     " , " +
-  //     date1.getFullYear();
-  // } else {
-  //   timeString = "updated " + diffDays + " days ago";
-  // }
-
   return (
     <div className="flex flex-col justify-between p-2 gap-6  border border-gray-600 rounded-md w-full h-full">
       <div className="flex justify-between ">
